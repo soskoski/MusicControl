@@ -1,9 +1,7 @@
-import App from "./components/App.js";
-
 const RootComponent = () => {
     return (
       <div>
-        <App />
+        <App />  {/* Now using the App component */}
       </div>
     );
   };
