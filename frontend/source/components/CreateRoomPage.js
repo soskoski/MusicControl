@@ -12,8 +12,9 @@ import {
   Checkbox,
   Switch,
   Input,
+  responsiveFontSizes,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { json, Link } from "react-router-dom";
 
 export default class CreateRoom extends Component {
   defaultVotes = 2;
@@ -44,7 +45,18 @@ export default class CreateRoom extends Component {
   }
 
   handleCreateRoomButtonPressed() {
-    console.log(this.state);
+    const requestOptions = {
+      method: "POST",
+      headers: { "content-Type": "application/json" },
+      body: JSON.stringify({
+        votes_to_skip: this.state.VotesToSkip,
+        guess_can_pause: this.state.GuessCanpause,
+      }),
+    };
+
+    fetch("/api/createRoom", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
   }
 
   render() {
