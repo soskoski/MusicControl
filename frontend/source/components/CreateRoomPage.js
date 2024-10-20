@@ -79,14 +79,14 @@ const CreateRoom = () => {
   const handleCreateRoomButtonPressed = () => {
     const requestOptions = {
       method: "POST",
-      headers: { "content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         votes_to_skip: VotesToSkip,
         guess_can_pause: GuestCanpause,
       }),
     };
 
-    fetch("api/CreateRoom", requestOptions)
+    fetch("/api/createRoom", requestOptions)
       .then((response) => response.json())
       .then((data) => {
         const roomCode = data.code;
@@ -100,8 +100,8 @@ const CreateRoom = () => {
       spacing={1}
       direction={"column"}
       alignItems={"center"}
-      justifyContent={"center"}
-      //style={{ height: "100vh" }}
+      // justifyContent={"center"}
+      // style={{ height: "100vh" }}
     >
       <Grid2 item="true" xs={12} alignItems={"center"}>
         <Typography component="h4" variant="h4">
@@ -167,3 +167,5 @@ const CreateRoom = () => {
     </Grid2>
   );
 };
+
+export default CreateRoom;

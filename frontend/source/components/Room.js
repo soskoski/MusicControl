@@ -1,6 +1,3 @@
-// import React, { Component } from "react";
-// import { useParams } from "react-router-dom";
-
 // export default class Room extends Component {
 //   constructor(props) {
 //     super(props);
