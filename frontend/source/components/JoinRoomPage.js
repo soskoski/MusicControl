@@ -2,16 +2,6 @@ import React, { useState } from "react";
 import { TextField, Button, Grid2, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 
-// export default class JoinRoom extends Component {
-//   constructor(props) {
-//     super(props);
-//   }
-
-//   render() {
-//     return <p>This is Join room page000</p>;
-//   }
-// }
-
 const JoinRoom = () => {
   const [roomCode, setRoomCode] = useState("");
   const [error, setError] = useState("");

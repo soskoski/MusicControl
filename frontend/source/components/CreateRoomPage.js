@@ -16,55 +16,9 @@ import {
 } from "@mui/material";
 import { json, Link, Navigate, useNavigate } from "react-router-dom";
 
-// export default class CreateRoom extends Component {
-//   defaultVotes = 2;
-
-//   constructor(props) {
-//     super(props);
-
-//     this.state = {
-//       GuessCanpause: true,
-//       VotesToSkip: this.defaultVotes,
-//     };
-
-//     this.handleCreateRoomButtonPressed =
-//       this.handleCreateRoomButtonPressed.bind(this);
-//     this.handleVotesChange = this.handleVotesChange.bind(this);
-//     this.handleGuessCanPauseChange = this.handleGuessCanPauseChange.bind(this);
-//   }
-
-//   handleVotesChange(e) {
-//     this.setState({
-//       VotesToSkip: e.target.value,
-//     });
-//   }
-//   handleGuessCanPauseChange(e) {
-//     this.setState({
-//       GuessCanpause: e.target.value === "true" ? true : false,
-//     });
-//   }
-
-//   handleCreateRoomButtonPressed() {
-//     const requestOptions = {
-//       method: "POST",
-//       headers: { "content-Type": "application/json" },
-//       body: JSON.stringify({
-//         votes_to_skip: this.state.VotesToSkip,
-//         guess_can_pause: this.state.GuessCanpause,
-//       }),
-//     };
-
-//     fetch("/api/createRoom", requestOptions)
-//       .then((response) => response.json())
-//       .then((data) => {
-//         const roomCode = data.code;
-//         useNavigate
-//       });
-//   }
-
 const CreateRoom = () => {
   const defaultVotes = 2;
-  const [GuestCanpause, setGuestCanPause] = useState(false);
+  const [GuestCanpause, setGuestCanPause] = useState(true);
   const [VotesToSkip, setVotesToSkip] = useState(defaultVotes);
   const navigate = useNavigate();
 

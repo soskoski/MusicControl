@@ -2,20 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import HomePage from "./HomePage";
 
-// export default class App extends Component {
-//   constructor(props) {
-//     super(props);
-//   }
-
-//   render() {
-//     return (
-//       <div>
-//         <HomePage />
-//       </div>
-//     );
-//   }
-// }
-
 const App = () => {
   return (
     <div className="center">

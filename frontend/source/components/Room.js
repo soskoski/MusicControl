@@ -1,32 +1,3 @@
-// export default class Room extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       votesToSkip: 2,
-//       guessCanPause: false,
-//       isHost: false,
-//     };
-//   }
-
-//   render() {
-//     const pars = this.props.params;
-//     console.log(pars);
-//     return (
-//       <div>
-//         {/* <p>Room Code: {roomCode}</p> */}
-//         <p>Votes to Skip: {this.state.votesToSkip}</p>
-//         <p>Guess Can Pause: {this.state.guessCanPause}</p>
-//         <p>Is Host: {this.state.isHost}</p>
-//       </div>
-//     );
-//   }
-// }
-
-// function RoomWrapper(props) {
-//   const { roomCode } = useParams();
-//   return <Room {...props} roomCode={roomCode} />;
-// }
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
@@ -47,6 +18,9 @@ const Room = () => {
         setVotesToSkip(data.votes_to_skip);
         setGuestCanPause(data.guess_can_pause);
         setIsHost(data.is_host);
+
+        console.log("Extracted Room Code:", roomCode);
+        console.log("API Response Data:", data);
       })
       .catch((error) => {
         console.error("Error fetching Room details:", error);
