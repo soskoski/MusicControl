@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Grid2, Button, Typography } from "@mui/material";
+import CreateRoom from "./CreateRoomPage";
 
 const Room = ({ leaveRoomCallBack }) => {
   const { roomCode } = useParams();
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [isHost, setIsHost] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +49,31 @@ const Room = ({ leaveRoomCallBack }) => {
     });
   };
 
+  const UpdateRoomSettings = (value) => {
+    setShowSettings(value);
+  };
+
+  const renderSettings = () => (
+    <Grid2 container spacing={1}>
+      <Grid2 item="true" xs={12}></Grid2>
+      <Grid2 item="true" xs={12}></Grid2>
+    </Grid2>
+  );
+
+  const renderSettingsButton = () => (
+    <Grid2 item="true" xs={12}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          UpdateRoomSettings(true);
+        }}
+      >
+        Settings
+      </Button>
+    </Grid2>
+  );
+
   return (
     <Grid2 container spacing={1} direction={"column"} alignItems={"center"}>
       <Grid2 item="true" xs={12} align="center">
@@ -69,6 +96,7 @@ const Room = ({ leaveRoomCallBack }) => {
           Host: {isHost ? "YES" : "NO"}
         </Typography>
       </Grid2>
+      {isHost ? renderSettingsButton() : null}
       <Grid2 item="true" xs={12} align="center">
         <Button
           variant="contained"

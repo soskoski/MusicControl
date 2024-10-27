@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import RoomSerializer, CreateRoomSerializer
+from .serializers import RoomSerializer, CreateRoomSerializer, UpdateRoomSerializer
 from .models import Room
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -38,7 +38,7 @@ class JoinRoom(APIView):
 
         if code != None:
             room_result = Room.objects.filter(code=code)
-            if len(room_result) > 0:
+            if len(room_result) > 0: #room_result.exits()
                 room = room_result[0]
                 self.request.session['room_code'] = code
                 return Response({'message' : 'Joined Room!', 'code': code}, status=status.HTTP_200_OK)
@@ -94,3 +94,33 @@ class Leave(APIView):
                 room.delete()
 
         return Response({'Message' : 'Success'}, status=status.HTTP_200_OK)
+    
+class UpdateRoom(APIView):
+    serializer_class = UpdateRoomSerializer
+
+    def patch(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            guess_can_pasuse = serializer.data.get('guess_can_pause')
+            votes_to_skip = serializer.data.get('votes_to_skip')
+            code = serializer.data.get('code')
+        
+            queryset = Room.objects.filter(code=code)
+            if not queryset.exists():
+                return Response({'message': 'Room not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            room = queryset[0]
+            user_id = self.request.session.session_key
+            if room.host !=user_id:
+                return Response({'message': 'You are not the host of this room.'}, status=status.HTTP_403_FORBIDDEN)
+            
+            room.guess_can_pause = guess_can_pasuse
+            room.votes_to_skip = votes_to_skip
+            room.save(update_fields=['guess_can_pause', 'votes_to_skip'])
+            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+
+
+        return Response({'Bad Request' : 'Invalid Data...'}, status=status.HTTP_400_BAD_REQUEST)
