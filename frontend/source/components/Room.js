@@ -29,8 +29,8 @@ const Room = ({ leaveRoomCallBack }) => {
         setGuestCanPause(data.guess_can_pause);
         setIsHost(data.is_host);
 
-        console.log("Extracted Room Code:", roomCode);
-        console.log("API Response Data:", data);
+        // console.log("Extracted Room Code:", roomCode);
+        // console.log("API Response Data:", data);
       })
       .catch((error) => {
         console.error("Error fetching Room details:", error);
@@ -54,9 +54,27 @@ const Room = ({ leaveRoomCallBack }) => {
   };
 
   const renderSettings = () => (
-    <Grid2 container spacing={1}>
-      <Grid2 item="true" xs={12}></Grid2>
-      <Grid2 item="true" xs={12}></Grid2>
+    <Grid2 container spacing={1} direction={"column"} align={"center"}>
+      <Grid2 item="true" xs={12}>
+        <CreateRoom
+          update={true}
+          votesToSkip={votesToSkip}
+          guestCanPause={guestCanPause}
+          roomCode={roomCode}
+          updateCallBack={GetRoomDetails}
+        />
+      </Grid2>
+      <Grid2 item="true" xs={12}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            UpdateRoomSettings(false);
+          }}
+        >
+          Close
+        </Button>
+      </Grid2>
     </Grid2>
   );
 
@@ -74,6 +92,9 @@ const Room = ({ leaveRoomCallBack }) => {
     </Grid2>
   );
 
+  if (showSettings) {
+    return renderSettings();
+  }
   return (
     <Grid2 container spacing={1} direction={"column"} alignItems={"center"}>
       <Grid2 item="true" xs={12} align="center">
@@ -109,5 +130,4 @@ const Room = ({ leaveRoomCallBack }) => {
     </Grid2>
   );
 };
-
 export default Room;

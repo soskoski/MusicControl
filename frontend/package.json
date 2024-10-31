@@ -2,8 +2,6 @@
   "name": "frontend",
   "version": "1.0.0",
   "main": "index.js",
-   
-
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production"
@@ -28,6 +26,7 @@
     "@emotion/styled": "^11.13.0",
     "@media-ui/core": "^0.0.1-security",
     "@mui/icons-material": "^6.1.1",
+    "@mui/lab": "^6.0.0-beta.14",
     "@mui/material": "^6.1.1",
     "react-router-dom": "^6.26.2"
   }
