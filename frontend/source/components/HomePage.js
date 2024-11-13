@@ -21,7 +21,7 @@ const HomePage = () => {
         const data = await response.json();
         setRoomCode(data.code);
       } catch (error) {
-        console.error("Erro fetching data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 

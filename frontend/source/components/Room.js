@@ -23,9 +23,11 @@ const Room = ({ leaveRoomCallBack }) => {
   }, [isHost]);
 
   const GetRoomDetails = () => {
+    console.log("Fetching room details for room code:", roomCode);
     fetch(`/api/getRoom?code=${roomCode}`)
       .then((response) => {
         if (!response.ok) {
+          console.log("Room not found, leaving room.");
           leaveRoomCallBack();
           navigate("/");
         }
@@ -40,20 +42,23 @@ const Room = ({ leaveRoomCallBack }) => {
         console.error("Error fetching Room details:", error);
       });
 
-    if (isHost) {
-      authenticateSpotify();
-    }
+    // if (isHost) {
+    //   authenticateSpotify();
+    // }
   };
 
   const authenticateSpotify = () => {
+    console.log("Authenticating Spotify...");
     fetch("/spotify/is-authenticated")
       .then((response) => response.json())
       .then((data) => {
+        console.log("Spotify authenticated status:", data.status);
         setSpotifyAuthenticated(data.status);
         if (!data.status) {
           fetch("/spotify/get-auth-url")
             .then((response) => response.json())
             .then((data) => {
+              console.log("Redirecting to Spotify URL:", data.url);
               window.location.replace(data.url);
             });
         }
@@ -61,6 +66,7 @@ const Room = ({ leaveRoomCallBack }) => {
   };
 
   const LeaveRoomButtonPressed = () => {
+    console.log("Leaving room...");
     const requestOptions = {
       method: "POST",
       headers: { "content-type": "application/json" },
