@@ -10,6 +10,7 @@ const Room = ({ leaveRoomCallBack }) => {
   const [isHost, setIsHost] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  const [song, setSong] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +64,18 @@ const Room = ({ leaveRoomCallBack }) => {
             });
         }
       });
+  };
+
+  const GetCurrentSong = () => {
+    fetch("/spotify/current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => setSong(data));
   };
 
   const LeaveRoomButtonPressed = () => {
@@ -131,21 +144,7 @@ const Room = ({ leaveRoomCallBack }) => {
           Code: {roomCode}
         </Typography>
       </Grid2>
-      <Grid2 item="true" xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Votes to Skip: {votesToSkip}
-        </Typography>
-      </Grid2>
-      <Grid2 item="true" xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Guest can Pause: {guestCanPause ? "YES" : "NO"}
-        </Typography>
-      </Grid2>
-      <Grid2 item="true" xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Host: {isHost ? "YES" : "NO"}
-        </Typography>
-      </Grid2>
+      {song}
       {isHost ? renderSettingsButton() : null}
       <Grid2 item="true" xs={12} align="center">
         <Button
