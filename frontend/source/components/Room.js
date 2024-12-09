@@ -71,15 +71,27 @@ const Room = ({ leaveRoomCallBack }) => {
       });
   };
 
-  // const switchAccountButton = () => {
-  //   const handleSwitchAccount = () => {
-  //     fetch("/spotify/reauthorize").then((response) => {
-  //       if (response.redirected) {
-  //         window.location.href = response.url;
-  //       }
-  //     });
-  //   };
+  // const handleSwitchAccount = () => {
+  //   fetch("/spotify/reauthorize").then((response) => {
+  //     if (response.redirected) {
+  //       window.location.href = response.url;
+  //     }
+  //   });
   // };
+
+  fetch("/spotify/clear-tokens", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Response", data);
+    })
+    .catch((error) => {
+      error.log("Error", error);
+    });
 
   const GetCurrentSong = () => {
     fetch("/spotify/current-song")
@@ -178,6 +190,7 @@ const Room = ({ leaveRoomCallBack }) => {
           Leave Room
         </Button>
       </Grid2>
+      {/* <Button onClick={handleSwitchAccount}>Switch account</Button> */}
     </Grid2>
   );
 };

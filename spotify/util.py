@@ -4,6 +4,7 @@ from datetime import timedelta
 from requests import post
 from .credentials import CLIENT_ID, CLIENT_SECRET
 from requests import post, put, get
+from django.http import JsonResponse
 
 
 BASE_URL = "https://api.spotify.com/v1/me/"
@@ -45,7 +46,9 @@ def is_spotify_authenticated(session_id):
         #     spotify_user_id = response["id"]
         #     if spotify_user_id != tokens.user:
         #         print("Spotify account mismatch, Reauthorizing...")
-        #         return False
+        #         tokens.delete()
+        #         return JsonResponse({'error': 'Spotify account mismatch. Please reauthorize.'}, status=403)
+                
 
         return True
     print("User is not authenticated for session:", session_id)
@@ -106,5 +109,16 @@ def pause_song(session_id):
     print("Attempting to pause song for session:", session_id)
     response = execute_spotify_api_request(session_id, "player/pause", put_=True)
     print("Spotify response", response)
+
+
+
+def clear_tokens(session_id):
+    if session_id:
+        SpotifyTokens.objects.filter(user=session_id).delete()
+        print(f"Tokens cleared for session: {session_id}")
+
+    else:
+        SpotifyTokens.objects.all().delete()
+        print("All tokens cleared")
     
     

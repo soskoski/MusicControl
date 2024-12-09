@@ -9,20 +9,6 @@ from django.http import JsonResponse, HttpResponseRedirect
 from api.models import Room
 
 
-# def reauthorize_user(request):
-#     session_id = request.session.session_key
-
-#     if not session_id:
-#         request.session.create()
-
-#     tokens = get_user_tokens(session_id)
-#     if tokens:
-#         tokens.delete()
-
-#     scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
-#     url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={scopes}"
-
-#     return redirect(url)
 
 class AuthURL(APIView):
     def get(self, request, format=None):
@@ -37,6 +23,7 @@ class AuthURL(APIView):
 
         return Response({'url': url}, status=status.HTTP_200_OK)
     
+
 def spotify_callback(request, format=None):
     code = request.GET.get('code')
     error = request.GET.get('error')
@@ -61,6 +48,7 @@ def spotify_callback(request, format=None):
     token_type = response.get('token_type')
     refresh_token = response.get('refresh_token')
     expires_in = response.get('expires_in')
+    spotify_user_id = response.get("id")
 
     if not access_token:
         return JsonResponse({'error': 'Failed to retrieve access token', 'details' : response}, status=400)
@@ -80,6 +68,21 @@ class isAuthenticated(APIView):
 
         is_authenticated = is_spotify_authenticated(session_key)
         return Response({'status': is_authenticated}, status=status.HTTP_200_OK)
+    
+# def reauthorize_user(request):
+#     session_id = request.session.session_key
+
+#     if not session_id:
+#         request.session.create()
+
+#     tokens = get_user_tokens(session_id)
+#     if tokens:
+#         tokens.delete()
+
+#     scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
+#     url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={scopes}"
+
+#     return redirect(url)
 
 class currentSong(APIView):
     def get(self, request, format=None):
@@ -145,3 +148,16 @@ class PlaySong(APIView):
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         
         return Response({}, status=status.HTTP_403_FORBIDDEN)
+    
+
+class ClearTokens(APIView):
+    def deleteTokens(self, request, format=None):
+        print("HTTP Method:", request.method)
+        session_id = request.session.session_key
+
+        if session_id:
+            clear_tokens(session_id)
+            return Response({'message': f"Token cleared for session: {session_id}"}, status=status.HTTP_200_OK)
+        
+        else:
+            return Response({'error': "No session id found"}, status=status.HTTP_400_BAD_REQUEST)
