@@ -6,4 +6,7 @@ urlpatterns = [
     path('redirect', spotify_callback),
     path('is-authenticated', isAuthenticated.as_view()),
     path('current-song', currentSong.as_view()),
+    path('play', PlaySong.as_view()),
+    path('pause', PauseSong.as_view()),
+    # path('reauthorize', reauthorize_user.as_view())
 ]

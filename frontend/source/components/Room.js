@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Grid2, Button, Typography } from "@mui/material";
 import CreateRoom from "./CreateRoomPage";
+import MusicPlayer from "./musicPlayer";
 
 const Room = ({ leaveRoomCallBack }) => {
   const { roomCode } = useParams();
@@ -23,6 +24,14 @@ const Room = ({ leaveRoomCallBack }) => {
     }
   }, [isHost]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      GetCurrentSong();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const GetRoomDetails = () => {
     console.log("Fetching room details for room code:", roomCode);
     fetch(`/api/getRoom?code=${roomCode}`)
@@ -42,10 +51,6 @@ const Room = ({ leaveRoomCallBack }) => {
       .catch((error) => {
         console.error("Error fetching Room details:", error);
       });
-
-    // if (isHost) {
-    //   authenticateSpotify();
-    // }
   };
 
   const authenticateSpotify = () => {
@@ -66,6 +71,16 @@ const Room = ({ leaveRoomCallBack }) => {
       });
   };
 
+  // const switchAccountButton = () => {
+  //   const handleSwitchAccount = () => {
+  //     fetch("/spotify/reauthorize").then((response) => {
+  //       if (response.redirected) {
+  //         window.location.href = response.url;
+  //       }
+  //     });
+  //   };
+  // };
+
   const GetCurrentSong = () => {
     fetch("/spotify/current-song")
       .then((response) => {
@@ -75,7 +90,10 @@ const Room = ({ leaveRoomCallBack }) => {
           return response.json();
         }
       })
-      .then((data) => setSong(data));
+      .then((data) => {
+        setSong(data);
+        console.log(data);
+      });
   };
 
   const LeaveRoomButtonPressed = () => {
@@ -119,6 +137,11 @@ const Room = ({ leaveRoomCallBack }) => {
       </Grid2>
     </Grid2>
   );
+  if (Object.keys(song).length > 0) {
+    console.log("The song object has properties:", song);
+  } else {
+    console.log("The song object is empty.");
+  }
 
   const renderSettingsButton = () => (
     <Grid2 item="true" xs={12}>
@@ -144,7 +167,7 @@ const Room = ({ leaveRoomCallBack }) => {
           Code: {roomCode}
         </Typography>
       </Grid2>
-      {song}
+      <MusicPlayer {...song} />
       {isHost ? renderSettingsButton() : null}
       <Grid2 item="true" xs={12} align="center">
         <Button
