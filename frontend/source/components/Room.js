@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { json, useNavigate, useParams } from "react-router-dom";
 import { Grid2, Button, Typography } from "@mui/material";
 import CreateRoom from "./CreateRoomPage";
 import MusicPlayer from "./musicPlayer";
@@ -71,6 +71,49 @@ const Room = ({ leaveRoomCallBack }) => {
       });
   };
 
+  // const revokeSpotifyToken = () => {
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //   };
+
+  //   fetch("http://127.0.0.1:8000/spotify/revoke-token", requestOptions)
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         return response.json().then((data) => {
+  //           throw new Error(data.error || "Failed to revoke token");
+  //         });
+  //       }
+
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       console.log("Token revoked:", data.message);
+  //       alert("Spotify token revoked successfully!");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error revoking token:", error.message);
+  //       alert("Failed to revoke Spotify token: " + error.message);
+  //     });
+  // };
+
+  function logoutSpotify() {
+    fetch("/spotify/get-auth-url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const authUrl = data.url;
+        window.location.href = authUrl;
+      })
+      .catch((error) => {
+        console.error("Error fetching auth URl", error);
+      });
+  }
+
   // const handleSwitchAccount = () => {
   //   fetch("/spotify/reauthorize").then((response) => {
   //     if (response.redirected) {
@@ -79,19 +122,19 @@ const Room = ({ leaveRoomCallBack }) => {
   //   });
   // };
 
-  fetch("/spotify/clear-tokens", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Response", data);
-    })
-    .catch((error) => {
-      error.log("Error", error);
-    });
+  // fetch("/spotify/clear-tokens", {
+  //   method: "DELETE",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // })
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     console.log("Response", data);
+  //   })
+  //   .catch((error) => {
+  //     error.log("Error", error);
+  //   });
 
   const GetCurrentSong = () => {
     fetch("/spotify/current-song")
@@ -190,7 +233,7 @@ const Room = ({ leaveRoomCallBack }) => {
           Leave Room
         </Button>
       </Grid2>
-      {/* <Button onClick={handleSwitchAccount}>Switch account</Button> */}
+      <Button onClick={logoutSpotify}>Switch account</Button>
     </Grid2>
   );
 };

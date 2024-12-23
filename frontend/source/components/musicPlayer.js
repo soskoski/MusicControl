@@ -64,6 +64,24 @@ const MusicPlayer = ({
       });
   };
 
+  const skipSong = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/skip", requestOptions);
+  };
+
+  const skipPreviousSong = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/previous", requestOptions);
+  };
+
   const songProgress = duration && duration > 0 ? (time / duration) * 100 : 0;
 
   return (
@@ -116,6 +134,10 @@ const MusicPlayer = ({
               marginTop: "10px",
             }}
           >
+            <IconButton onClick={() => skipPreviousSong()}>
+              <SkipPrevious />
+            </IconButton>
+
             <IconButton
               onClick={() => {
                 console.log("Button pressed, is_playing: ", is_playing);
@@ -125,7 +147,7 @@ const MusicPlayer = ({
             >
               {is_playing ? <Pause /> : <PlayArrow />}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => skipSong()}>
               <SkipNext />
             </IconButton>
           </div>

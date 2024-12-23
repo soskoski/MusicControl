@@ -5,6 +5,7 @@ from requests import post
 from .credentials import CLIENT_ID, CLIENT_SECRET
 from requests import post, put, get
 from django.http import JsonResponse
+import requests
 
 
 BASE_URL = "https://api.spotify.com/v1/me/"
@@ -54,22 +55,40 @@ def is_spotify_authenticated(session_id):
     print("User is not authenticated for session:", session_id)
     return False
 
-def refresh_spotify_token(session_id):
-    refresh_token = get_user_tokens(session_id).refresh_token
+# def refresh_spotify_token(session_id):
+#     refresh_token = get_user_tokens(session_id).refresh_token
 
-    response = post('https://accounts.spotify.com/api/token', data={
-        'grant_type':'refresh_token',
+#     response = post('https://accounts.spotify.com/api/token', data={
+#         'grant_type':'refresh_token',
+#         'refresh_token': refresh_token,
+#         'client_id': CLIENT_ID,
+#         'client_secret': CLIENT_SECRET
+#     }).json()
+
+#     access_token = response.get('access_token')
+#     token_type = response.get('token_type')
+#     expires_in = response.get('expires_in', 3600)
+#     # refresh_token = response.get('refresh_token', refresh_token)
+
+#     update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token)
+def refresh_spotify_token(session_key):
+    tokens = get_user_tokens(session_key)
+    if not tokens:
+        return None
+
+    refresh_token = tokens.refresh_token
+    response = requests.post('https://accounts.spotify.com/api/token', data={
+        'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
         'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET
+        'client_secret': CLIENT_SECRET,
     }).json()
 
-    access_token = response.get('access_token')
-    token_type = response.get('token_type')
-    expires_in = response.get('expires_in', 3600)
-    # refresh_token = response.get('refresh_token', refresh_token)
-
-    update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token)
+    new_access_token = response.get('access_token')
+    if new_access_token:
+        update_or_create_user_tokens(session_key, new_access_token, tokens.token_type, response['expires_in'], response['refresh_token'])
+        return new_access_token
+    return None
 
 def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
     tokens = get_user_tokens(session_id)
@@ -91,34 +110,29 @@ def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
         tokens = get_user_tokens(session_id)
         headers['Authorization'] = "Bearer" + tokens.access_token
 
+    if not response.text:
+        return {'error': 'Empty response from Spotify API'}
     
     if response.status_code == 200 or response.status_code == 204:
         return response.json()
     else:
        
         return {'Error': 'Issue with request, status code: ' + str(response.status_code)}
+    
+
 
 
     
 def play_song(session_id):
     print("Attempting to pause song for session:", session_id)
-    response = execute_spotify_api_request(session_id, "player/play", put_=True)
-    print("Spotify response: ", response) 
+    return execute_spotify_api_request(session_id, "player/play", put_=True)
 
 def pause_song(session_id):
     print("Attempting to pause song for session:", session_id)
-    response = execute_spotify_api_request(session_id, "player/pause", put_=True)
-    print("Spotify response", response)
+    return execute_spotify_api_request(session_id, "player/pause", put_=True)
 
+def skip_song(session_id):
+    return execute_spotify_api_request(session_id, "player/next", post_=True)
 
-
-def clear_tokens(session_id):
-    if session_id:
-        SpotifyTokens.objects.filter(user=session_id).delete()
-        print(f"Tokens cleared for session: {session_id}")
-
-    else:
-        SpotifyTokens.objects.all().delete()
-        print("All tokens cleared")
-    
-    
+def skip_previous_song(session_id):
+    return execute_spotify_api_request(session_id, "player/previous", post_=True)
