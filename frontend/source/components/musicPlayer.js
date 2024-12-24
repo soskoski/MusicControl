@@ -20,6 +20,8 @@ const MusicPlayer = ({
   is_playing,
   duration,
   time,
+  votes,
+  votes_required,
 }) => {
   const [isPlaying, setIsPlaying] = useState(is_playing);
 
@@ -147,8 +149,14 @@ const MusicPlayer = ({
             >
               {is_playing ? <Pause /> : <PlayArrow />}
             </IconButton>
-            <IconButton onClick={() => skipSong()}>
-              <SkipNext />
+            <IconButton
+              onClick={() => {
+                skipSong();
+                console.log("Votes: ", votes);
+                console.log("Votes required: ", votes_required);
+              }}
+            >
+              <SkipNext /> {votes} / {votes_required}
             </IconButton>
           </div>
         </Grid2>

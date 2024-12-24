@@ -68,21 +68,6 @@ class isAuthenticated(APIView):
 
         is_authenticated = is_spotify_authenticated(session_key)
         return Response({'status': is_authenticated}, status=status.HTTP_200_OK)
-    
-# def reauthorize_user(request):
-#     session_id = request.session.session_key
-
-#     if not session_id:
-#         request.session.create()
-
-#     tokens = get_user_tokens(session_id)
-#     if tokens:
-#         tokens.delete()
-
-#     scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
-#     url = f"https://accounts.spotify.com/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={scopes}"
-
-#     return redirect(url)
 
 class currentSong(APIView):
     def get(self, request, format=None):
@@ -116,7 +101,7 @@ class currentSong(APIView):
             name = artist.get('name')
             artist_string += name
 
-        votes = len(Vote.objects.filter(room=room, song_id=song_id))
+        votes = Vote.objects.filter(room=room, song_id=song_id).count()
         song = {
             'title': item.get('name'),
             'artist': artist_string,
@@ -162,7 +147,10 @@ class RevokeSpotifyToken(APIView):
 class PauseSong(APIView):
     def put(self, response, format=None):
         room_code = self.request.session.get('room_code')
-        room = Room.objects.filter(code=room_code)[0]
+        room = Room.objects.filter(code=room_code)
+        if not room.exists():
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        room = room[0]
         if self.request.session.session_key == room.host or room.guess_can_pause:
             pause_song(room.host)
             return Response({}, status=status.HTTP_204_NO_CONTENT)
@@ -183,11 +171,11 @@ class PlaySong(APIView):
     
 
 class SkipSong(APIView):
-    def post(self, request, Format=None):
+    def post(self, request, format=None):
         room_code = self.request.session.get('room_code')
         room = Room.objects.filter(code=room_code)[0]
         votes = Vote.objects.filter(room=room, song_id=room.current_song)
-        votes_needed = Room.votes_to_skip
+        votes_needed = room.votes_to_skip
 
         if self.request.session.session_key == room.host or len(votes) + 1 >= votes_needed:
             votes.delete()
